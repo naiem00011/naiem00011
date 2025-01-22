@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spin the Wheel with Ads</title>
+    <script src="//niphaumeenses.net/vignette.min.js" data-zone="8831890" data-sdk="ni_kajol"></script>
+    <style>
+        /* Global Styles */
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
+            text-align: center;
+        }
+
+        /* Main Container */
+        .app-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            padding: 40px 30px;
+            width: 90%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Heading */
+        h2 {
+            font-size: 26px;
+            font-weight: 600;
+            color: #f9ed69;
+        }
+
+        /* Developer Label */
+        .developer-label {
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #12c2e9, #c471ed, #f64f59);
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 14px;
+            color: #fff;
+        }
+
+        /* Spin Wheel Section */
+        .spin-wheel-container {
+            position: relative;
+            margin: 20px 0 30px;
+        }
+
+        .spin-wheel {
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            background: conic-gradient(#ff6347 0 90deg, #FFD700 90deg 180deg, #1E90FF 180deg 270deg, #32CD32 270deg 360deg);
+            border: 10px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+            transition: transform 4s ease-out;
+        }
+
+        /* Spin Button */
+        .spin-button {
+            background: linear-gradient(135deg, #8e44ad, #3498db);
+            color: #fff;
+            border: none;
+            padding: 16px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .spin-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .spin-button:active {
+            transform: scale(0.98);
+        }
+
+        /* Stats */
+        .stats {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .stats p {
+            margin: 5px 0;
+            color: #fff;
+            opacity: 0.8;
+        }
+
+        /* Toast Notification */
+        #toast {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 12px 20px;
+            font-size: 14px;
+            border-radius: 10px;
+            animation: fadeInOut 3s ease forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            20%, 80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 500px) {
+            .spin-wheel {
+                width: 180px;
+                height: 180px;
+            }
+
+            .spin-button {
+                padding: 12px 30px;
+                font-size: 16px;
+            }
+
+            .stats {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <h2>Spin the Wheel & Earn Rewards</h2>
+        <div class="developer-label">Developer  Md Naiem Islam </div>
+
+        <div class="stats">
+            <p id="ads-watched">Watched Ads: 0</p>
+            <p id="points-earned">Earned Points: 0</p>
+        </div>
+
+        <!-- Spin Wheel Section -->
+        <div class="spin-wheel-container">
+            <div class="spin-wheel" id="spinWheel"></div>
+            <button class="spin-button" onclick="spinWheel()">Spin the Wheel!</button>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script>
+        let adsWatched = 0;
+        let points = 0;
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        function watchAd() {
+            if (typeof ni_kajol === 'function') {
+                ni_kajol().then(() => {
+                    adsWatched++;
+                    document.getElementById('ads-watched').innerText = `Ads Watched: ${adsWatched}`;
+                    showToast("Ad Watched Successfully!");
+                }).catch(() => {
+                    showToast("Ad failed to load.");
+                });
+            }
+        }
+
+        function spinWheel() {
+            // Randomly select a segment (degree of rotation)
+            let spinDegree = Math.floor(Math.random() * 360) + 720;  // Spin at least 2 full rotations
+            const wheel = document.getElementById('spinWheel');
+            wheel.style.transition = 'transform 4s ease-out';
+            wheel.style.transform = `rotate(${spinDegree}deg)`;
+
+            // Calculate reward based on the final position after spin
+            setTimeout(() => {
+                let reward = "";
+                if (spinDegree % 360 < 90) reward = "10 Points";
+                else if (spinDegree % 360 < 180) reward = "20 Points";
+                else if (spinDegree % 360 < 270) reward = "50 Points";
+                else reward = "100 Points";
+
+                points += parseInt(reward.split(' ')[0]);
+                showToast(`You earned ${reward}!`);
+                document.getElementById('points-earned').innerText = `Points Earned: ${points}`;
+
+                // Show an ad after spin
+                watchAd();
+            }, 4000);  // Wait for the spin to finish
+        }
+        
+         // Prevent right-click
+        document.addEventListener("contextmenu", function(e) {
+            e.preventDefault();
+            alert("Buy This Code From Developer");
+            window.location.href = "https://t.me/naiemcre";
+        });
+
+        // Prevent F12, and other developer tools shortcuts
+        document.addEventListener("keydown", (e) => {
+            if (
+                e.key === "F12" || 
+                (e.ctrlKey && ["I", "J", "C", "U", "K", "S", "A", "X", "P"].includes(e.key)) || 
+                (e.shiftKey && e.key === "F10")
+                (e.ctrlKey && e.key === "S")
+                
+            ) {
+                e.preventDefault();
+                alert("Buy This Code From Developer");
+                 window.location.href = "https://t.me/naiemcre";
+            }
+               // Block Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
+      if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
+        e.preventDefault();
+        alert("Buy This Code From Developer");
+         window.location.href = "https://t.me/naiemcre";
+      }
+        });
+
+    document.addEventListener('keydown', function (e) {
+      // Check if the Ctrl key is pressed
+      if (e.ctrlKey) {
+        e.preventDefault();
+        alert("Buy This Code From Developer");
+        window.location.href = "https://t.me/naiemcre";
+      }
+    });
+    
+    document.addEventListener('keydown', function (e) {
+      // Check if the Shift key is pressed
+      if (e.shiftKey) {
+        e.preventDefault();
+        alert("Buy This Code From Developer");
+        window.location.href = "https://t.me/naiemcre";
+      }
+    });
+    </script>
+    
+    
+</body>
+</html>
+
